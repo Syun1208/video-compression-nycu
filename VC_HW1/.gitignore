@@ -1,0 +1,7 @@
+**/*.zip
+**/*.pdf
+# **/*outputs
+**/*report
+# **/*ablation
+**/*__pycache__/
+**/*.npy
