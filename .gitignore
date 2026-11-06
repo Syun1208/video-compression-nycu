@@ -14,3 +14,4 @@ VC_HW2/outputs/three_step_rdo
 VC_HW2/outputs/full_search
 **/*.txt
 **/*.json
+**/*.DS_Store
