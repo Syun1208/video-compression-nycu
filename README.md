@@ -7,5 +7,6 @@
 
 | Assignment | Topics | Best Performance | Checklist |
 |---|---|---|:---:|
-| [HW1](VC_HW1/) | Problem 1: Spatial coding - 8x8 DCT, quantization, zigzag scan and VALUE/EOB Huffman coding, Lena and Mandrill (512x512 grayscale) | **35.81 dB** PSNR at **0.838 bpp** on Lena, **34.20 dB** PSNR at **1.455 bpp** on Mandrill | ⬜ |
-| [HW2](VC_HW2/) | | | ⬜ |
+| [HW1](VC_HW1/) | Problem 1: Spatial coding | **35.81 dB** PSNR at **0.838 bpp** on Lena, **34.20 dB** PSNR at **1.455 bpp** on Mandrill | ✅ |
+| [HW2](VC_HW2/) | Problem 1: Motion estimation| **33.38 dB** PSNR at **1.267 bpp** on two_gray with TSS + RDO (Q3) | ✅ |
+| [HW3](VC_HW3/) | Problem 1: Intra prediction | **35.73 dB** PSNR at **0.800 bpp** on Lena, **34.11 dB** PSNR at **1.466 bpp** on Mandrill | ⬜ |

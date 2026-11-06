@@ -2,6 +2,15 @@
 **/*.pdf
 # **/*outputs
 **/*report
+**/*.bin
+**/*.npz
 # **/*ablation
 **/*__pycache__/
 **/*.npy
+**/*README_TA.md
+VC_HW2/outputs/HW2_314540080
+VC_HW2/outputs/three_step_search
+VC_HW2/outputs/three_step_rdo
+VC_HW2/outputs/full_search
+**/*.txt
+**/*.json

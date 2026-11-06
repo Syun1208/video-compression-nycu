@@ -95,9 +95,12 @@ def read_value(reader, s):
     # When complete, return: value
     if s == 0:
         return 0
+
     amplitude = reader.read_bits(s)
+
     if amplitude >= (1 << (s - 1)):
         return amplitude
+
     return amplitude - (1 << s) + 1
 
 
@@ -110,17 +113,20 @@ def read_block(reader):
     coeffs = np.zeros(64, dtype=np.int32)
     tokens = []
     index = 0
+
     while index < 64:
         start_bit = reader.pos
         category = reader.read_token()
-        if category is None:  # EOB: remaining coefficients stay zero
+
+        if category is None:
             tokens.append(("EOB", None, start_bit, reader.pos))
             break
+
         value = read_value(reader, category)
         coeffs[index] = value
-        # end_bit is taken after the amplitude bits, so the range covers prefix + amplitude
         tokens.append(("VALUE", value, start_bit, reader.pos, category))
         index += 1
+
     return coeffs, tokens
 
 
@@ -140,6 +146,7 @@ def reconstruct_block(zigzagged, C=DCT_BASIS):
     after_columns = C.T @ dequantized
     spatial = after_columns @ C + 128.0
     block = np.clip(np.rint(spatial), 0, 255).astype(np.uint8)
+
     return qf, dequantized, after_columns, spatial, block
 
 

@@ -1,35 +1,15 @@
-# Video Compression HW1: Spatial Coding
-
-| Student | Student ID | University | Course |
-|---|---|---|---|
-| Pham Minh Long 龍志 | 314540080 | National Yang Ming Chiao Tung University (NYCU) | Video Compression, Fall 2026 |
+## Video Compression HW1: Spatial Coding
+### ***Student:*** Pham Minh Long 龍志
+### ***Student ID***: 314540080
+### ***University:*** National Yang Ming Chiao Tung University (NYCU)
 
 ## Introduction
 
 A JPEG style spatial codec for 8-bit grayscale images, built on the course template ([VC_HW1.pdf](VC_HW1.pdf)).
 Each 8x8 block is transformed, quantized, zigzag scanned and Huffman coded into a bitstream, and the decoder inverts every stage to rebuild the image.
 
-| Stage | Encoder | Decoder |
-|---|---|---|
-| Transform | Level shift by 128, row-wise then column-wise 1-D DCT with the given basis `C` | Column-wise then row-wise 1-D IDCT, level shift, rounding and clipping to `[0, 255]` |
-| Quantization | `QF = rint(F / Q)` with the standard luminance table, range check `[-2047, 2047]` | `F_hat = QF * Q` |
-| Scan | Zigzag order into 64 values | Inverse zigzag |
-| Entropy coding | `VALUE(v)` category code plus amplitude bits, `EOB` after the last non-zero value, MSB first | Prefix decoding (up to 9 bits) and amplitude recovery |
-
-**Highlights**
-
-- Block 0 traces and final metrics match the course reference for Lena and Mandrill within every tolerance.
-- DCT and IDCT use only the provided basis matrix `C`, with no built-in transform functions.
-- bpp is measured from the real `.bin` file, and the decoder validates the header, padding bits and leftover payload bits.
-- Three ablation studies: quantization table, zigzag against raster scan, and two-stage 1-D DCT against direct 2-D DCT.
-- Full write-up in the report [HW1_314540080.pdf](HW1_314540080.pdf).
-
 ## Setup
 
-| Python | NumPy | Pillow | Use |
-|---|---|---|---|
-| 3.12.9 | 2.5.3 | 12.1.1 | `outputs/`, `ablation/results.json` and the report |
-| 3.9.6 | 1.24.3 | 10.0.1 | Output identical to the reference files, bit for bit |
 
 ```bash
 conda create -n vc python=3.12 -y
@@ -37,15 +17,6 @@ conda activate vc
 pip install numpy pillow
 brew install tectonic
 ```
-
-Tectonic is only needed to build the report. The test data comes with the assignment and is already in `data/`:
-
-| File | Description |
-|---|---|
-| `data/lena_gray.png` | Lena, 512x512, 8-bit grayscale |
-| `data/mandril_gray.png` | Mandrill, 512x512, 8-bit grayscale |
-| `data/lena_reference_output.txt` | Reference encoder trace, decoder trace and evaluation for Lena |
-| `data/mandril_reference_output.txt` | Reference encoder trace, decoder trace and evaluation for Mandrill |
 
 ## Usage
 
@@ -58,11 +29,6 @@ python decoder.py outputs/output.bin outputs/reconstructed.png --trace outputs/d
 python evaluate.py data/lena_gray.png outputs/reconstructed.png outputs/output.bin
 ```
 
-| Step | Output |
-|---|---|
-| Encoder | `outputs/output.bin` (4-byte header and Huffman payload), `outputs/encoder_trace.txt` |
-| Decoder | `outputs/reconstructed.png`, `outputs/decoder_trace.txt` |
-| Evaluation | MSE, PSNR, bpp and bit counts printed to the terminal |
 
 ### Check both test images against the reference
 
@@ -74,23 +40,14 @@ for img in lena mandril; do
 done
 ```
 
-Compare the traces and the printed metrics with `data/{img}_reference_output.txt`.
-
 ### Ablation studies
 
-Run `ablation.py` first, because `extra.py` reads and updates the `results.json` it writes.
 
 ```bash
 python ablation/ablation.py
 python ablation/extra.py
 python ablation/stage_figs.py
 ```
-
-| Script | Task | Output |
-|---|---|---|
-| `ablation/ablation.py` | Quantization table sweep, scan orders and DCT methods. Every variant writes a real `.bin` file and decodes it with the submitted functions | `ablation/results.json` |
-| `ablation/extra.py` | Times the four DCT versions again with interleaved runs and takes the median | `ablation/results.json` |
-| `ablation/stage_figs.py` | Block input and output maps, decoded crops per Q table, bits per block maps | `report/figures/*.png` |
 
 ### Report, figures and submission
 
@@ -101,11 +58,6 @@ rm -f HW1_314540080.zip
 zip -j HW1_314540080.zip encoder.py decoder.py HW1_314540080.pdf
 ```
 
-| Step | Output |
-|---|---|
-| Build the report | `HW1_314540080.pdf` |
-| Export the report figures as PNG for this README | `outputs/figures/*.png` |
-| Create the submission | `HW1_314540080.zip` with `encoder.py`, `decoder.py` and `HW1_314540080.pdf` at its root, no ablation code |
 
 ## Results
 
@@ -121,7 +73,6 @@ All numbers come from Python 3.12.9 and NumPy 2.5.3 on an Apple M2 (`outputs/` a
 | MSE | 17.069725 | 17.069817 | 24.699440 | 24.699432 | 0.01 |
 | PSNR (dB) | 35.808538 | **35.808515** | 34.203933 | **34.203934** | 0.01 |
 
-The small payload difference comes from floating-point rounding in the DCT. With NumPy 1.24.3 both images match the reference exactly.
 
 ![Before and after coding](outputs/figures/codec_before_after.png)
 *Before and after coding with the standard Q table, and the absolute error.*
@@ -133,8 +84,6 @@ The small payload difference comes from floating-point rounding in the DCT. With
 *Input and output of each block for the standard codec.*
 
 ### Ablation 1: quantization table (bpp, PSNR)
-
-Scaled tables use the libjpeg quality formula, where `q = 50` gives the standard table. Flat tables use one step for all 64 coefficients.
 
 | Table | Lena bpp | Lena PSNR (dB) | Mandrill bpp | Mandrill PSNR (dB) |
 |---|---:|---:|---:|---:|
@@ -187,7 +136,6 @@ Scaled tables use the libjpeg quality formula, where `q = 50` gives the standard
 
 ### Ablation 2: zigzag against raster scan (bpp, PSNR)
 
-Raster order reads the block row by row in both the encoder and the decoder. PSNR does not change because the scan only reorders the same quantized values.
 
 | Image | Scan | bpp | bpp increase | PSNR (dB) | `VALUE(0)` per block |
 |---|---|---:|---:|---:|---:|
@@ -195,8 +143,6 @@ Raster order reads the block row by row in both the encoder and the decoder. PSN
 | Lena | Raster | 1.0121 | +20.8% | 35.809 | 10.17 |
 | Mandrill | Zigzag | 1.4546 | baseline | 34.204 | 7.63 |
 | Mandrill | Raster | 1.7971 | +23.6% | 34.204 | 18.59 |
-
-bpp increase of raster over zigzag at other quality levels:
 
 | Quality `q` | Lena | Mandrill |
 |---:|---:|---:|
@@ -221,10 +167,38 @@ The direct version computes the double sum `F(u,v) = sum_x sum_y C(u,x) f(x,y) C
 | Two-stage, Python loops | 1024 | 134.93 | 134.98 | 0.837616 | 1.454590 |
 | Direct 2-D, Python loops | 4096 | 498.78 | 486.83 | 0.837616 | 1.454559 |
 
-With the same loop style, the direct DCT is about 3.6 to 3.7 times slower than the two-stage DCT. Both compute the same transform, so bpp only moves by a few bits from floating-point rounding.
-
 ![DCT time and bpp](outputs/figures/dct_time_bpp.png)
 *DCT time (log scale) and bpp.*
 
 ![DCT output of the two methods](outputs/figures/dct_output.png)
 *DCT output of the two methods, shown as log(1 + |F|).*
+
+## Citation
+
+```bibtex
+@misc{videocompression2026hw1,
+  title  = {Video Compression 2026 HW1: Spatial Coding},
+  author = {NYCU Video Compression 2026 Fall TAs},
+  year   = {2026}
+}
+
+@article{ahmed1974dct,
+  title   = {Discrete Cosine Transform},
+  author  = {Ahmed, N. and Natarajan, T. and Rao, K.R.},
+  journal = {IEEE Transactions on Computers},
+  volume  = {C-23},
+  number  = {1},
+  pages   = {90--93},
+  year    = {1974}
+}
+
+@article{wallace1991jpeg,
+  title   = {The JPEG still picture compression standard},
+  author  = {Wallace, Gregory K.},
+  journal = {Communications of the ACM},
+  volume  = {34},
+  number  = {4},
+  pages   = {30--44},
+  year    = {1991}
+}
+```

@@ -87,9 +87,12 @@ def transform_block(block, C=DCT_BASIS):
     after_rows = shifted @ C.T
     F = C @ after_rows
     QF = np.rint(F / Q).astype(np.int32)
+
     if np.any(np.abs(QF) > 2047):
         raise ValueError("quantized coefficient outside [-2047, 2047]")
+
     zigzag = QF.reshape(64)[ZIGZAG]
+
     return shifted, after_rows, F, QF, zigzag
 
 
@@ -101,8 +104,10 @@ def encode_block_symbols(zigzag):
     nonzero = np.flatnonzero(zigzag)
     last = int(nonzero[-1]) if nonzero.size else -1
     symbols = [("VALUE", int(v)) for v in zigzag[:last + 1]]
+
     if last < 63:
         symbols.append(("EOB", None))
+
     return symbols
 
 
@@ -115,18 +120,23 @@ def write_symbol(writer, token, arg):
     if token == "EOB":
         code, length = EOB_CODE
         writer.write_bits(code, length)
+
         return f"{code:0{length}b}"
+
     if token != "VALUE":
         raise ValueError(f"unknown token: {token}")
+
     v = int(arg)
-    s = abs(v).bit_length()  # = floor(log2|v|) + 1 for v != 0, 0 for v == 0
+    s = abs(v).bit_length()
     code, length = VALUE_CODE[s]
     writer.write_bits(code, length)
     bits = f"{code:0{length}b}"
+
     if s > 0:
         amplitude = v if v > 0 else v + (1 << s) - 1
         writer.write_bits(amplitude, s)
         bits += f"{amplitude:0{s}b}"
+
     return bits
 
 
